@@ -55,13 +55,14 @@ jobs:
         run: >
             curl -fsSL ${{github.event.issue.pull_request.url}}
             -H "Authorization: token ${{github.token}}" |
-            jq -r '"PR_REF="+.head.ref, "PR_SHA="+.head.sha, "PR_NUM="+(.number|tostring)'
+            jq -r '"PR_REF="+.head.ref, "PR_SHA="+.head.sha, "PR_NUM="+(.number|tostring), "PR_REPO="+.head.repo.full_name'
             >>$GITHUB_ENV
       - #&step_checkout
         name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${{env.PR_REF}}  ## not empty on issue_comment, else default value GITHUB_REF
+          ref:        ${{env.PR_REF}}  ## not empty on issue_comment, else default value GITHUB_REF
+          repository: ${{env.PR_REPO}} ## not empty on issue_comment, else default value github.repository
       -
         name: Show context
         run: |
