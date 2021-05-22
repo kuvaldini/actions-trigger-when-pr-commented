@@ -34,6 +34,15 @@ jobs:
 
           env
       - 
+        # Send reaction to comment to show build was triggered
+        name: Reaction rocket to comment
+        run: |
+          curl -fL ${{github.event.comment.url}}/reactions \
+            -X POST \
+            -d '{"content":"rocket"}' \
+            -H "Accept: application/vnd.github.squirrel-girl-preview+json" \
+            -H "Authorization: token ${{github.token}}"
+      - 
         name: Dispatch a new workflow
         run: |
           curl -fL ${{github.api_url}}/repos/${{github.repository}}/actions/workflows/builds.yml/dispatches \
@@ -43,15 +52,6 @@ jobs:
             -H "Authorization: token ${{github.token}}"
         #-d '{"ref":"refs/heads/pr/${{github.event.issue.number}}/merge"}' \
         #ref:refs/heads/pr/${{github.event.issue.number}}/merge
-      - 
-        # Send reaction to comment to show build was triggered
-        name: Reaction rocket to comment
-        run: |
-          curl -fL ${{github.event.comment.url}}/reactions \
-            -X POST \
-            -d '{"content":"rocket"}' \
-            -H "Accept: application/vnd.github.squirrel-girl-preview+json" \
-            -H "Authorization: token ${{github.token}}"
 
   # build:
   #   runs-on: ubuntu-latest
