@@ -9,12 +9,8 @@ on:
 
 jobs:
   job_comment_on_pr:
+    ## Just to react to valid comment with rocket
     runs-on: ubuntu-latest
-    outputs:
-      triggered: ${{ github.event.comment &&
-          github.event.issue.pull_request &&
-          startsWith(github.event.comment.body, '/buildme') }}
-    ## use as needs.job_comment_on_pr.outputs.triggered
     if: ${{ github.event.comment &&
           github.event.issue.pull_request &&
           startsWith(github.event.comment.body, '/buildme') }}
@@ -22,17 +18,9 @@ jobs:
       -
         name: Show context
         run: |
-          cat <<'END'
+          cat >/dev/null <<'END'
             ${{ toJson(github) }}
           END
-      - 
-        name: GITHUB_ENV
-        run: |
-          echo COMMENT_ON_PULL_REQUEST=true                  >>$GITHUB_ENV
-          curl ${{github.event.issue.pull_request.url}} |
-            jq -r '"REF="+.head.ref, "SHA="+ .head.sha'      >>$GITHUB_ENV
-
-          env
       - 
         name: Reaction
         run: |
@@ -45,11 +33,18 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    ## Run on each event, but PR comment is checked for key phrase.
     if: ${{ github.event_name != 'issue_comment' ||
             ( github.event.issue.pull_request &&
             startsWith(github.event.comment.body, '/buildme') ) }}
     steps:
-      - #&step_detect_pr
+      -
+        name: Show context
+        run: |
+          cat >/dev/null <<'END'
+            ${{ toJson(github) }}
+          END
+      - #&step_detect_commented_pr
         name: REF and SHA of commented PR to ENV
         if: github.event.comment
         run: >
@@ -68,17 +63,5 @@ jobs:
           ref:        ${{env.PR_REF}}  ## not empty on issue_comment, else default value GITHUB_REF
           repository: ${{env.PR_REPO}} ## not empty on issue_comment, else default value github.repository, required by forks
       -
-        name: Show context
-        run: |
-          git log -1 --decorate
-          cat <<'END'
-            ${{ toJson(github) }}
-          END
-      -
-        name: Show needs
-        run: |
-          cat <<'END'
-            ${{ toJson(needs) }}
-          END
-      - 
-        run: echo "HELLO"
+        name: Show git log
+        run: git log --decorate
