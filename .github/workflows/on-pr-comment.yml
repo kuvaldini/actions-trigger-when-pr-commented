@@ -45,7 +45,7 @@ jobs:
       - 
         name: Dispatch a new workflow
         run: |
-          curl -fL ${{github.api_url}}/repos/${{github.repository}}/actions/workflows/builds.yml/dispatches \
+          curl -fL ${{github.api_url}}/repos/${{github.repository}}/actions/workflows/build.yml/dispatches \
             -X POST \
             -d '{"ref":"main"}' \
             -H "Accept: application/vnd.github.v3+json" \
