@@ -2,27 +2,18 @@ name: on_pr_comment
 
 on:
   push:
-    branches: [ main, support/1.2.x ]
-    tags: [ 'v*' ]
   pull_request:
-    branches: [ main, support/1.2.x ]  ## target branches
-  workflow_dispatch:
-    ## NOTE: Able to run via cmdline: gh workflow run Iroha1
-    inputs:
-      whatever:
-        description: 'some-string.'
-        required: true
-        default: 'hello world!'
   issue_comment:
     types: [created, edited]
 
 jobs:
   job_comment_on_pr:
     runs-on: ubuntu-latest
-    # outputs:
-    #   triggered: ${{ github.event.comment &&
-    #       github.event.issue.pull_request &&
-    #       startsWith(github.event.comment.body, '/buildme') }}
+    outputs:
+      triggered: ${{ github.event.comment &&
+          github.event.issue.pull_request &&
+          startsWith(github.event.comment.body, '/buildme') }}
+    ## use as needs.job_comment_on_pr.outputs.triggered
     if: ${{ github.event.comment &&
           github.event.issue.pull_request &&
           startsWith(github.event.comment.body, '/buildme') }}
@@ -39,6 +30,8 @@ jobs:
           echo COMMENT_ON_PULL_REQUEST=true                  >>$GITHUB_ENV
           curl ${{github.event.issue.pull_request.url}} |
             jq -r '"REF="+.head.ref, "SHA="+ .head.sha'      >>$GITHUB_ENV
+
+          env
       - 
         name: Reaction
         run: |
@@ -51,11 +44,15 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    ## triggred ? job_comment_on_pr : ""
     needs: job_comment_on_pr
-    ## Not requiring dependent jobs to be successful
-    if: ${{ always() }}
+    if: ${{ success() || needs.job_comment_on_pr.result == 'skipped' }}
     steps:
+      - name: steps.triggered_by_pr_comment.outputs.skipped
+        id: triggered_by_pr_comment
+        run: |
+          echo ::set-output name=skipped::${{needs.job_comment_on_pr.result == 'skipped'}}
+          echo  >>$GITHUB_ENV     SKIPPED=${{needs.job_comment_on_pr.result == 'skipped'}}
+          env
       -
         name: Show context
         run: |
