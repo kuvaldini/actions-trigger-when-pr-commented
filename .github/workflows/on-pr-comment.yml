@@ -1,69 +1,79 @@
 name: on_pr_comment
 
 on:
-  push:
-  pull_request:
   issue_comment:
-    types: [created, edited]
+    types: [created] #, edited]
 
 jobs:
   job_comment_on_pr:
     runs-on: ubuntu-latest
     outputs:
-      triggered: ${{ github.event.comment &&
-          github.event.issue.pull_request &&
+      triggered: ${{ github.event.issue.pull_request &&
           startsWith(github.event.comment.body, '/buildme') }}
+      # pr_head_ref: steps.detect_pr.outputs.head_ref
+      # pr_head_sha: steps.detect_pr.outputs.head_sha
+      # pr_num: github.event.issue.number
+
     ## use as needs.job_comment_on_pr.outputs.triggered
-    if: ${{ github.event.comment &&
+    if: ${{ github.event.comment && 
           github.event.issue.pull_request &&
           startsWith(github.event.comment.body, '/buildme') }}
     steps:
       -
         name: Show context
         run: |
-          cat <<'END'
+          cat >/dev/null <<'END'
             ${{ toJson(github) }}
           END
       - 
-        name: GITHUB_ENV
+        name: GITHUB_ENV << REF,SHA
+        id: detect_pr
         run: |
-          echo COMMENT_ON_PULL_REQUEST=true                  >>$GITHUB_ENV
           curl ${{github.event.issue.pull_request.url}} |
             jq -r '"REF="+.head.ref, "SHA="+ .head.sha'      >>$GITHUB_ENV
 
           env
       - 
-        name: Reaction
+        name: Dispatch a new workflow
         run: |
-          # send reaction to comment to show build was triggered
-          curl ${{github.event.comment.url}}/reactions \
+          curl -fL ${{github.api_url}}/repos/${{github.repository}}/actions/workflows/on-pr-comment.yml/dispatches \
+            -X POST \
+            -d '{"ref":"'$SHA'"}' \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{github.token}}"
+        #ref:refs/heads/pr/${{github.event.issue.number}}/merge
+      - 
+        # Send reaction to comment to show build was triggered
+        name: Reaction rocket to comment
+        run: |
+          curl -fL ${{github.event.comment.url}}/reactions \
             -X POST \
             -d '{"content":"rocket"}' \
             -H "Accept: application/vnd.github.squirrel-girl-preview+json" \
             -H "Authorization: token ${{github.token}}"
 
-  build:
-    runs-on: ubuntu-latest
-    needs: job_comment_on_pr
-    if: ${{ success() || needs.job_comment_on_pr.result == 'skipped' }}
-    steps:
-      - name: steps.triggered_by_pr_comment.outputs.skipped
-        id: triggered_by_pr_comment
-        run: |
-          echo ::set-output name=skipped::${{needs.job_comment_on_pr.result == 'skipped'}}
-          echo  >>$GITHUB_ENV     SKIPPED=${{needs.job_comment_on_pr.result == 'skipped'}}
-          env
-      -
-        name: Show context
-        run: |
-          cat <<'END'
-            ${{ toJson(github) }}
-          END
-      -
-        name: Show needs
-        run: |
-          cat <<'END'
-            ${{ toJson(needs) }}
-          END
-      - 
-        run: echo "HELLO"
+  # build:
+  #   runs-on: ubuntu-latest
+  #   needs: job_comment_on_pr
+  #   if: ${{ success() || needs.job_comment_on_pr.result == 'skipped' }}
+  #   steps:
+  #     - name: steps.triggered_by_pr_comment.outputs.skipped
+  #       id: triggered_by_pr_comment
+  #       run: |
+  #         echo ::set-output name=skipped::${{needs.job_comment_on_pr.result == 'skipped'}}
+  #         echo  >>$GITHUB_ENV     SKIPPED=${{needs.job_comment_on_pr.result == 'skipped'}}
+  #         env
+  #     -
+  #       name: Show context
+  #       run: |
+  #         cat <<'END'
+  #           ${{ toJson(github) }}
+  #         END
+  #     -
+  #       name: Show needs
+  #       run: |
+  #         cat <<'END'
+  #           ${{ toJson(needs) }}
+  #         END
+  #     - 
+  #       run: echo "HELLO"
