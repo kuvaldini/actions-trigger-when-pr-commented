@@ -49,9 +49,13 @@ jobs:
           #data=$(jq -n "{ ref:$PR_REF, description: }")
           curl -fsSL ${{github.api_url}}/repos/${{github.repository}}/deployments \
             -X POST \
-            -d '{"ref":"'"$PR_REF"'", "environment":"qa", "description":"Comment on PR '$PR_NUM'" }' \
+            -d '{
+              "ref":"'"$PR_REF"'", 
+              "description":"Comment on PR '$PR_NUM'" 
+            }' \
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{github.token}}"
+        #"environment":"qa", 
       - 
         # Send reaction to comment to show build was triggered
         name: Reaction rocket to comment
