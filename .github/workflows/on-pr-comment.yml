@@ -30,19 +30,27 @@ jobs:
         id: detect_pr
         run: |
           curl ${{github.event.issue.pull_request.url}} |
-            jq -r '"REF="+.head.ref, "SHA="+ .head.sha'      >>$GITHUB_ENV
-
-          env
+            jq -r '"PR_REF="+.head.ref, "PR_SHA="+ .head.sha, "PR_NUM="+.number'
+            >>$GITHUB_ENV
+      # - 
+      #   name: Dispatch a new workflow
+      #   run: |
+      #     curl -fsSL ${{github.api_url}}/repos/${{github.repository}}/actions/workflows/build.yml/dispatches \
+      #       -X POST \
+      #       -d '{"ref":"main"}' \
+      #       -H "Accept: application/vnd.github.v3+json" \
+      #       -H "Authorization: token ${{github.token}}"
+      #   #-d '{"ref":"refs/heads/pr/${{github.event.issue.number}}/merge"}' \
+      #   #ref:refs/heads/pr/${{github.event.issue.number}}/merge
       - 
-        name: Dispatch a new workflow
+        name: Create a deployment
         run: |
-          curl -fsSL ${{github.api_url}}/repos/${{github.repository}}/actions/workflows/build.yml/dispatches \
+          #data=$(jq -n "{ref:$PR_REF, description:}")
+          curl -fsSL ${{github.api_url}}/repos/${{github.repository}}/deployments \
             -X POST \
-            -d '{"ref":"main"}' \
+            -d '{"ref":"'"$PR_REF"'", "description":"Comment on PR '$PR_NUM'" }' \
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{github.token}}"
-        #-d '{"ref":"refs/heads/pr/${{github.event.issue.number}}/merge"}' \
-        #ref:refs/heads/pr/${{github.event.issue.number}}/merge
       - 
         # Send reaction to comment to show build was triggered
         name: Reaction rocket to comment
