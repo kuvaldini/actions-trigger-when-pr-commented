@@ -1,0 +1,26 @@
+name: build
+
+on:
+  # push:
+  # pull_request:
+  workflow_dispatch:
+  deployment:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Show context
+        run: |
+          cat >/dev/null <<'END'
+            ${{ toJson(github) }}
+          END
+      -
+        name: Show needs
+        run: |
+          cat >/dev/null <<'END'
+            ${{ toJson(needs) }}
+          END
+      - 
+        run: echo "HELLO"
