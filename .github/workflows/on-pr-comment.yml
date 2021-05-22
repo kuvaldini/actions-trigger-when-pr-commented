@@ -1,0 +1,63 @@
+name: on_pr_comment
+
+on:
+  push:
+    branches: [ main, support/1.2.x ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, support/1.2.x ]  ## target branches
+  workflow_dispatch:
+    ## NOTE: Able to run via cmdline: gh workflow run Iroha1
+    inputs:
+      whatever:
+        description: 'some-string.'
+        required: true
+        default: 'hello world!'
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  job_comment_on_pr:
+    runs-on: ubuntu-latest
+    outputs:
+      triggered: ${{ github.event.comment &&
+          github.event.issue.pull_request &&
+          startsWith(github.event.comment.body, '/buildme') }}
+    if: ${{ github.event.comment &&
+          github.event.issue.pull_request &&
+          startsWith(github.event.comment.body, '/buildme') }}
+    steps:
+      -
+        name: Show context
+        run: |
+          cat <<'END'
+            ${{ toJson(github) }}
+          END
+      - 
+        name: GITHUB_ENV
+        run: |
+          echo COMMENT_ON_PULL_REQUEST=true                  >>$GITHUB_ENV
+          curl ${{github.event.issue.pull_request.url}} |
+            jq -r '"REF="+.head.ref, "SHA="+ .head.sha'      >>$GITHUB_ENV
+      - 
+        name: Reaction
+        run: |
+          # send reaction to comment to show build was triggered
+          curl ${{github.event.comment.url}}/reactions \
+            -X POST \
+            -d '{"content":"rocket"}' \
+            -H "Accept: application/vnd.github.squirrel-girl-preview+json"
+
+  build:
+    runs-on: ubuntu-latest
+    ## triggred ? job_comment_on_pr : ""
+    needs: job_comment_on_pr
+    ## Not requiring dependent jobs to be successful
+    if: ${{ always() }}
+    steps:
+      -
+        name: Show context
+        run: |
+          cat <<'END'
+            ${{ toJson(github) }}
+          END
