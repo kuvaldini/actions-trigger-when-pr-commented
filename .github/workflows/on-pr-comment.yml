@@ -46,7 +46,8 @@ jobs:
           curl ${{github.event.comment.url}}/reactions \
             -X POST \
             -d '{"content":"rocket"}' \
-            -H "Accept: application/vnd.github.squirrel-girl-preview+json"
+            -H "Accept: application/vnd.github.squirrel-girl-preview+json" \
+            -H "Authorization: token ${{github.token}}"
 
   build:
     runs-on: ubuntu-latest
