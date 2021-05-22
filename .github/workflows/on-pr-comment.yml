@@ -36,11 +36,12 @@ jobs:
       - 
         name: Dispatch a new workflow
         run: |
-          curl -fL ${{github.api_url}}/repos/${{github.repository}}/actions/workflows/on-pr-comment.yml/dispatches \
+          curl -fL ${{github.api_url}}/repos/${{github.repository}}/actions/workflows/builds.yml/dispatches \
             -X POST \
-            -d '{"ref":"'$SHA'"}' \
+            -d '{"ref":"main"}' \
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{github.token}}"
+        #-d '{"ref":"refs/heads/pr/${{github.event.issue.number}}/merge"}' \
         #ref:refs/heads/pr/${{github.event.issue.number}}/merge
       - 
         # Send reaction to comment to show build was triggered
