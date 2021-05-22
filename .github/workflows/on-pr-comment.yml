@@ -62,3 +62,5 @@ jobs:
           cat <<'END'
             ${{ toJson(github) }}
           END
+      - 
+        run: echo "HELLO"
