@@ -19,10 +19,10 @@ on:
 jobs:
   job_comment_on_pr:
     runs-on: ubuntu-latest
-    outputs:
-      triggered: ${{ github.event.comment &&
-          github.event.issue.pull_request &&
-          startsWith(github.event.comment.body, '/buildme') }}
+    # outputs:
+    #   triggered: ${{ github.event.comment &&
+    #       github.event.issue.pull_request &&
+    #       startsWith(github.event.comment.body, '/buildme') }}
     if: ${{ github.event.comment &&
           github.event.issue.pull_request &&
           startsWith(github.event.comment.body, '/buildme') }}
@@ -61,6 +61,12 @@ jobs:
         run: |
           cat <<'END'
             ${{ toJson(github) }}
+          END
+      -
+        name: Show needs
+        run: |
+          cat <<'END'
+            ${{ toJson(needs) }}
           END
       - 
         run: echo "HELLO"
