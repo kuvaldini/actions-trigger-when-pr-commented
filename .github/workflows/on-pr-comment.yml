@@ -28,11 +28,11 @@ jobs:
       - 
         name: GITHUB_ENV << REF,SHA
         id: detect_pr
-        run: |
-          curl ${{github.event.issue.pull_request.url}} 
-              -H "Authorization: token ${{github.token}}" |
+        run: >
+            curl ${{github.event.issue.pull_request.url}} \
+            -H "Authorization: token ${{github.token}}" |
             jq -r '"PR_REF="+.head.ref, "PR_SHA="+ .head.sha, "PR_NUM="+(.number|tostring)'
-              >>$GITHUB_ENV
+            >>$GITHUB_ENV
       # - 
       #   name: Dispatch a new workflow
       #   run: |
@@ -46,10 +46,10 @@ jobs:
       - 
         name: Create a deployment
         run: |
-          #data=$(jq -n "{ref:$PR_REF, description:}")
+          #data=$(jq -n "{ ref:$PR_REF, description: }")
           curl -fsSL ${{github.api_url}}/repos/${{github.repository}}/deployments \
             -X POST \
-            -d '{"ref":"'"$PR_REF"'", "description":"Comment on PR '$PR_NUM'" }' \
+            -d '{"ref":"'"$PR_REF"'", "environment":"qa", "description":"Comment on PR '$PR_NUM'" }' \
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{github.token}}"
       - 
