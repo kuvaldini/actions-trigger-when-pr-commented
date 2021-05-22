@@ -76,5 +76,3 @@ jobs:
           cat <<'END'
             ${{ toJson(needs) }}
           END
-      - 
-        run: echo "HELLO"
