@@ -29,9 +29,10 @@ jobs:
         name: GITHUB_ENV << REF,SHA
         id: detect_pr
         run: |
-          curl ${{github.event.issue.pull_request.url}} |
-            jq -r '"PR_REF="+.head.ref, "PR_SHA="+ .head.sha, "PR_NUM="+.number'
-            >>$GITHUB_ENV
+          curl ${{github.event.issue.pull_request.url}} 
+              -H "Authorization: token ${{github.token}}" |
+            jq -r '"PR_REF="+.head.ref, "PR_SHA="+ .head.sha, "PR_NUM="+(.number|tostring)'
+              >>$GITHUB_ENV
       # - 
       #   name: Dispatch a new workflow
       #   run: |
