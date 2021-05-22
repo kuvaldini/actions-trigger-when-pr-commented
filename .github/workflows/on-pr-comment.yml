@@ -51,18 +51,17 @@ jobs:
     steps:
       - #&step_detect_pr
         name: REF and SHA of commented PR to ENV
-        id: detect_pr
         if: github.event.comment
         run: >
-            curl -fsSL ${{github.event.issue.pull_request.url}} \
+            curl -fsSL ${{github.event.issue.pull_request.url}}
             -H "Authorization: token ${{github.token}}" |
-            jq -r '"GITHUB_REF="+.head.ref, "GITHUB_SHA="+.head.sha, "PR_NUM="+(.number|tostring)'
+            jq -r '"PR_REF="+.head.ref, "PR_SHA="+.head.sha, "PR_NUM="+(.number|tostring)'
             >>$GITHUB_ENV
       - #&step_checkout
         name: Checkout
         uses: actions/checkout@v2
-        # with:
-        #   ref: ${{env.PR_REF}}  ## not empty on issue_comment, else default value GITHUB_REF
+        with:
+          ref: ${{env.PR_REF}}  ## not empty on issue_comment, else default value GITHUB_REF
       -
         name: Show context
         run: |
