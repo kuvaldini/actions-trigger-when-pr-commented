@@ -31,6 +31,11 @@ jobs:
             -H "Accept: application/vnd.github.squirrel-girl-preview+json" \
             -H "Authorization: token ${{github.token}}"
 
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo hello
+
   build:
     runs-on: ubuntu-latest
     ## Run on each event, but PR comment is checked for key phrase.
@@ -51,10 +56,10 @@ jobs:
             ${{ toJson(job) }}
           END
       -
-        name: Show jobs
+        name: Show needs
         run: |
           cat >/dev/null <<'END'
-            ${{ toJson(jobs) }}
+            ${{ toJson(needs) }}
           END
       - #&step_detect_commented_pr
         name: REF and SHA of commented PR to ENV
