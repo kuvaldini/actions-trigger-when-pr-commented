@@ -33,8 +33,9 @@ jobs:
 
   prepare:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
-      - run: echo hello
+      - run: echo hello; exit 1
 
   build:
     runs-on: ubuntu-latest
