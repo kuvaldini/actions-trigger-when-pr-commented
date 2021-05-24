@@ -1,4 +1,4 @@
-name: on_pr_comment
+name: on-pr-comment
 
 on:
   push:
@@ -43,6 +43,12 @@ jobs:
         run: |
           cat >/dev/null <<'END'
             ${{ toJson(github) }}
+          END
+      -
+        name: Show job
+        run: |
+          cat >/dev/null <<'END'
+            ${{ toJson(job) }}
           END
       - #&step_detect_commented_pr
         name: REF and SHA of commented PR to ENV
