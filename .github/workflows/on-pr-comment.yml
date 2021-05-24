@@ -50,6 +50,12 @@ jobs:
           cat >/dev/null <<'END'
             ${{ toJson(job) }}
           END
+      -
+        name: Show jobs
+        run: |
+          cat >/dev/null <<'END'
+            ${{ toJson(jobs) }}
+          END
       - #&step_detect_commented_pr
         name: REF and SHA of commented PR to ENV
         if: github.event.comment
