@@ -34,6 +34,7 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     continue-on-error: true
+    if: ${{ secrets.tokenx }}
     steps:
       - run: echo hello; exit 1
 
