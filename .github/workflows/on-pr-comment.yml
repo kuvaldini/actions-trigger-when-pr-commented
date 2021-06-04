@@ -34,9 +34,17 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     continue-on-error: true
-    if: ${{ secrets.tokenx }}
     steps:
+      - run: echo 1111111;
       - run: echo hello; exit 1
+        continue-on-error: true
+      - run: xxx
+        id: asd
+        if: ${{false}}
+      - run: echo 333333;
+        if: steps.asd.outcome == 'skipped'
+      - run: echo 44444;
+        if: steps.asd.outcome != 'skipped'
 
   build:
     runs-on: ubuntu-latest
