@@ -96,9 +96,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON('{"include":[{}]}') }}
+      matrix: ${{ fromJSON('{"include":[]}') }}
         # a: [x]
         # include: ${{ fromJSON('[]') }}
-    if: ${{ fromJSON('[]')[0] == null }}
+    if: ${{ fromJSON('[]')[0] != null }}
     steps:
     - run: echo HALLELUAH \''${{ fromJSON('[]')[0] }}'\'
