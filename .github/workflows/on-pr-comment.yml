@@ -96,8 +96,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix: #${{ fromJSON('"include":{[]}') }}
-        a: [x]
+      matrix: ${{ fromJSON('{"include":[{"a":4}]}') }}
+        # a: [x]
         # include: ${{ fromJSON('[]') }}
     if: ${{ fromJSON('[]')[0] == null }}
     steps:
