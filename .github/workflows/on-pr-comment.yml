@@ -91,3 +91,13 @@ jobs:
       -
         name: Show git log
         run: git log --decorate
+
+  hello:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - {}
+    steps:
+    - run: echo HALLELUAH
