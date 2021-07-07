@@ -101,4 +101,4 @@ jobs:
         # include: ${{ fromJSON('[]') }}
     # if: ${{ fromJSON('[]')[0] != null }}
     steps:
-    - run: echo HALLELUAH \''${{ fromJSON('{[]}') }}'\'
+    - run: echo HALLELUAH \''${{ fromJSON('[]')[0] }}'\'
