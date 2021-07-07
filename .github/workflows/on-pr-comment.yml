@@ -99,4 +99,4 @@ jobs:
       matrix: ${{ fromJSON('{[]}') }}
     if: ${{ fromJSON('{[]}') }}
     steps:
-    - run: echo HALLELUAH
+    - run: echo HALLELUAH \''${{ fromJSON('{[]}') }}'\'
