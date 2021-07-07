@@ -97,6 +97,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON('{[]}') }}
-    if: ${{ fromJSON('{[]}')[0] }}
+    if: ${{ fromJSON('{[]}') }}
     steps:
     - run: echo HALLELUAH
