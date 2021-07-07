@@ -99,6 +99,6 @@ jobs:
       matrix: #${{ fromJSON('"include":{[]}') }}
         a: [x]
         # include: ${{ fromJSON('[]') }}
-    if: ${{ fromJSON('{[]}') }}
+    if: ${{ fromJSON('{[]}') != null }}
     steps:
     - run: echo HALLELUAH \''${{ fromJSON('{[]}') }}'\'
