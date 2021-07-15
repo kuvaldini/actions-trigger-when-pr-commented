@@ -45,11 +45,11 @@ jobs:
     needs: prepare
     # strategy:
     #   fail-fast: false
-    #   matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
-    # if: ${{ fromJSON(needs.matrix.outputs.matrix).include[0] }}
+    #   matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    # if: ${{ fromJSON(needs.prepare.outputs.matrix).include[0] }}
     steps:
-    - run: echo HELLO ${{ needs.matrix.outputs.matrix }}
-    - run: echo include ${{ fromJSON(needs.matrix.outputs.matrix).include[0] }}
+    - run: echo HELLO ${{ needs.prepare.outputs.matrix }}
+    - run: echo include ${{ fromJSON(needs.prepare.outputs.matrix).include[0] }}
     - run: echo HALLELUAH \''${{ fromJSON('[]')[0] }}'\'
 
   build:
