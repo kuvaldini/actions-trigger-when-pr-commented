@@ -35,16 +35,20 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
-      - run: echo 1111111;
-      - run: echo hello; exit 1
-        continue-on-error: true
-      - run: xxx
-        id: asd
-        if: ${{false}}
-      - run: echo 333333;
-        if: steps.asd.outcome == 'skipped'
-      - run: echo 44444;
-        if: steps.asd.outcome != 'skipped'
+      - run: echo '::set-output name=matrix::{"include":[]}'
+        id: matrix
+    outputs:
+      matrix: steps.matrix.outputs.matrix
+
+  hello:
+    runs-on: ubuntu-latest
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
+    if: ${{ fromJSON(needs.matrix.outputs.matrix).include[0] }}
+    steps:
+    - run: echo HALLELUAH \''${{ fromJSON('[]')[0] }}'\'
 
   build:
     runs-on: ubuntu-latest
@@ -91,14 +95,3 @@ jobs:
       -
         name: Show git log
         run: git log --decorate
-
-  hello:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJSON('{"include":[]}') }}
-        # a: [x]
-        # include: ${{ fromJSON('[]') }}
-    if: ${{ fromJSON('{"include":[]}').include[0] }}
-    steps:
-    - run: echo HALLELUAH \''${{ fromJSON('[]')[0] }}'\'
