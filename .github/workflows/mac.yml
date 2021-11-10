@@ -1,0 +1,21 @@
+name: mactest
+
+on:
+  push:
+  pull_request:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  hi:
+    runs-on: macos-10.15
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - run: echo HELLO
+    - run: bash --version
+    - run: brew install bash
+    - run: bash --version
+    - run: echo HALLELUAH
